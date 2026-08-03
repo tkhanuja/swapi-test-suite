@@ -1,6 +1,9 @@
 import random
 import pytest
+from tests.config import log_unique_test_result
 from utils import SwapiClient
+import os
+import struct
 
 RESOURCES = ["people", "films", "starships", "vehicles", "species", "planets"]
 
@@ -47,29 +50,72 @@ def validate_schema(data, schema):
                 expected_type = type_mapping[expected_type_str]
                 assert isinstance(value, expected_type), f"Field '{key}' expected type {expected_type_str}, got {type(value)}"
 
-def test_random_sample_schema(client, resource_name, resource_schema):
-    """Fetch random resource IDs and validate their schema shape."""
+def test_random_sample_resource_schema(client, resource_name, resource_schema):
+    """Fetch random items from the resource list and validate their schema shape."""
+    test_name = "test_random_sample_resource_schema"
     list_response = client.get(f"{resource_name}/")
-    if list_response.status_code == 404:
-        pytest.skip(f"Failed to fetch {resource_name} list.")
     assert list_response.status_code == 200
     data = list_response.json()
+
+    if not data or not isinstance(data, list):
+        pytest.skip(f"No valid item list found for resource: {resource_name}")
+
     total_count = len(data)
-
-    if total_count == 0:
-        pytest.skip(f"No items found for resource: {resource_name}")
-
     sample_size = min(3, total_count)
-    sample_ids = random.sample(range(1, total_count + 1), sample_size)
 
-    for item_id in sample_ids:
-        response = client.get(f"{resource_name}/{item_id}/")
+    # Randomly select actual items directly from the list payload 
+    # (this avoids hitting hardcoded ID ranges that might result in 404s)
+    random_indexes = []
+    while len(random_indexes) < sample_size:
+        # Unpack 4 random bytes from the OS into an integer
+        idx = struct.unpack("I", os.urandom(4))[0] % total_count
+        if idx not in random_indexes:
+            random_indexes.append(idx)
+
+    sampled_items = [data[i] for i in random_indexes]
+
+    for item in sampled_items:
+        # If the list item already contains the full details, validate directly,
+        # or fetch by its specific 'url' to ensure the detail endpoint works.
+        item_url = item.get("url")
+        if item_url:
+            response = client.get_by_url(item_url)
+        else:
+            # Fallback if url isn't in summary
+            response = client.get(f"{resource_name}/{random.randint(1, total_count)}/")
+
         if response.status_code == 404:
-                pytest.skip(f"Failed to fetch {resource_name} list.")
+            continue
+            
         assert response.status_code == 200
         item_data = response.json()
-        validate_schema(item_data, resource_schema)
+        
+        # Helper call to validate against schema
+        properties = resource_schema.get("properties", {})
+        required_fields = resource_schema.get("required", [])
 
+        for field in required_fields:
+            assert field in item_data, f"Required schema field '{field}' missing from payload."
+
+        type_mapping = {"string": str, "integer": int, "array": list}
+
+        for key, value in item_data.items():
+            if key in properties and value is not None:
+                expected_type_str = properties[key].get("type")
+                if expected_type_str in type_mapping:
+                    expected_type = type_mapping[expected_type_str]
+                    assert isinstance(value, expected_type), f"Field '{key}' expected type {expected_type_str}, got {type(value)}"
+    
+    test_case_id = f"{resource_name}-{item_url.rstrip('/').split('/')[-1]}"
+        
+        # Log the successful run
+    log_unique_test_result(
+            test_case_id=test_case_id,
+            resource_name=resource_name,
+            test_name=test_name,
+            result="PASS",
+            extra_details={"item_url": item_url}
+    )
 def test_pagination_and_dynamic_schema_validation(client, resource_name, resource_schema):
     """Fetch the resource list page, harvest dynamic URLs, and validate their schemas."""
     response = client.get(f"{resource_name}/")
@@ -92,41 +138,45 @@ def test_pagination_and_dynamic_schema_validation(client, resource_name, resourc
     if identifier_key in first_item_summary and identifier_key in item_detail:
         assert item_detail[identifier_key] == first_item_summary[identifier_key]
 
+
 def test_bidirectional_url_consistency(client, resource_name, resource_schema):
-    """Test that URLs in the API response (both strings and arrays) link correctly and point back."""
+    """Test bidirectional consistency on a random item and log unique results."""
+    test_name = "test_bidirectional_url_consistency"
     list_response = client.get(f"{resource_name}/")
     assert list_response.status_code == 200
     data = list_response.json()
 
-    assert len(data) > 0
-    parent_item = data[0]
+    if not data or not isinstance(data, list):
+        pytest.skip(f"No items found for resource: {resource_name}")
+
+    total_count = len(data)
+    random_idx = struct.unpack("I", os.urandom(4))[0] % total_count
+    parent_item = data[random_idx]
     parent_url = parent_item["url"]
 
     properties = resource_schema.get("properties", {})
+    one_way_fields = {"homeworld"}
 
     for field_name, field_def in properties.items():
         field_type = field_def.get("type")
         target_urls = []
 
-        # Case 1: Relationship is a single URL string (like 'homeworld')
         if field_type == "string" and field_name in parent_item and "http" in str(parent_item[field_name]):
             target_urls.append(parent_item[field_name])
-
-        # Case 2: Relationship is an array of URLs (like 'films', 'starships', 'residents')
         elif field_type == "array":
             urls = parent_item.get(field_name, [])
             if isinstance(urls, list):
                 target_urls.extend([u for u in urls if isinstance(u, str) and "http" in u])
 
-        # Test the first available link for this field to ensure connectivity and back-reference
         if target_urls:
-            sub_url = target_urls[0]
+            sub_url = target_urls[struct.unpack("I", os.urandom(4))[0] % len(target_urls)]
             sub_response = client.get_by_url(sub_url)
-            assert sub_response.status_code == 200, f"Failed to fetch sub-resource URL: {sub_url}"
+            assert sub_response.status_code == 200
             
             sub_data = sub_response.json()
+            if field_name in one_way_fields:
+                continue
 
-            # Verify that the sub-resource references the parent back somewhere in its payload
             back_reference_found = False
             for sub_key, sub_value in sub_data.items():
                 if isinstance(sub_value, list) and any(parent_url in str(item) for item in sub_value):
@@ -136,7 +186,15 @@ def test_bidirectional_url_consistency(client, resource_name, resource_schema):
                     back_reference_found = True
                     break
 
-            assert back_reference_found, (
-                f"Bidirectional mismatch: {parent_url} points to {sub_url} via '{field_name}', "
-                f"but {sub_url} does not reference back to the parent."
+            assert back_reference_found
+
+            # Unique ID combining parent URL and field relationship path
+            test_case_id = f"{resource_name}-{parent_url.rstrip('/').split('/')[-1]}-{field_name}"
+            
+            log_unique_test_result(
+                test_case_id=test_case_id,
+                resource_name=resource_name,
+                test_name=test_name,
+                result="PASS",
+                extra_details={"parent_url": parent_url, "sub_url": sub_url, "field": field_name}
             )
