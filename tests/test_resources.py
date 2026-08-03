@@ -56,6 +56,8 @@ def test_random_sample_resource_schema(client, resource_name, resource_schema):
     test_name = "test_random_sample_resource_schema"
     list_response = client.get(f"{resource_name}/")
     assert list_response.status_code == 200
+    assert list_response.elapsed.total_seconds() < 2.0
+    
     data = list_response.json()
 
     if not data or not isinstance(data, list):
@@ -121,6 +123,7 @@ def test_pagination_and_dynamic_schema_validation(client, resource_name, resourc
     """Fetch the resource list page, harvest dynamic URLs, and validate their schemas."""
     response = client.get(f"{resource_name}/")
     assert response.status_code == 200
+    assert response.elapsed.total_seconds() < 2.0
     data = response.json()
     
     assert len(data) > 0
@@ -158,6 +161,7 @@ def test_bidirectional_url_consistency(client, resource_name, resource_schema):
     test_name = "test_bidirectional_url_consistency"
     list_response = client.get(f"{resource_name}/")
     assert list_response.status_code == 200
+    assert list_response.elapsed.total_seconds() < 2.0
     data = list_response.json()
 
     if not data or not isinstance(data, list):
