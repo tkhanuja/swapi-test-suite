@@ -17,6 +17,7 @@ def resource_name(request):
     """Parameterizes tests to run for each resource type."""
     return request.param
 
+
 @pytest.fixture(scope="session")
 def resource_schema(client, resource_name):
     """Fetch and cache the official schema for the given resource once per session."""
@@ -137,7 +138,20 @@ def test_pagination_and_dynamic_schema_validation(client, resource_name, resourc
     identifier_key = "title" if "title" in first_item_summary else "name"
     if identifier_key in first_item_summary and identifier_key in item_detail:
         assert item_detail[identifier_key] == first_item_summary[identifier_key]
+        
 
+def test_negative_invalid_id_handling(client, resource_name):
+    """Ensure requesting non-existent or malformed IDs gracefully yields a 404."""
+    bad_responses = [
+        client.get(f"{resource_name}/999999/"),
+        client.get(f"{resource_name}/not-an-id/")
+    ]
+    
+    for response in bad_responses:
+        assert response.status_code in [404, 400], (
+            f"Expected 404 or 400 for invalid request on {resource_name}, "
+            f"got {response.status_code}"
+        )
 
 def test_bidirectional_url_consistency(client, resource_name, resource_schema):
     """Test bidirectional consistency on a random item and log unique results."""
