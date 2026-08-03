@@ -1180,5 +1180,223 @@
             "sub_url": "https://swapi.info/api/planets/13",
             "field": "url"
         }
+    },
+    {
+        "test_case_id": "people-29",
+        "resource_name": "people",
+        "test_name": "test_random_sample_resource_schema",
+        "result": "PASS",
+        "timestamp": "2026-08-03T09:42:14.392903",
+        "details": {
+            "item_url": "https://swapi.info/api/people/29"
+        }
+    },
+    {
+        "test_case_id": "people-22-films",
+        "resource_name": "people",
+        "test_name": "test_bidirectional_url_consistency",
+        "result": "PASS",
+        "timestamp": "2026-08-03T09:42:15.177771",
+        "details": {
+            "parent_url": "https://swapi.info/api/people/22",
+            "sub_url": "https://swapi.info/api/films/2",
+            "field": "films"
+        }
+    },
+    {
+        "test_case_id": "people-22-starships",
+        "resource_name": "people",
+        "test_name": "test_bidirectional_url_consistency",
+        "result": "PASS",
+        "timestamp": "2026-08-03T09:42:15.476677",
+        "details": {
+            "parent_url": "https://swapi.info/api/people/22",
+            "sub_url": "https://swapi.info/api/starships/21",
+            "field": "starships"
+        }
+    },
+    {
+        "test_case_id": "people-22-url",
+        "resource_name": "people",
+        "test_name": "test_bidirectional_url_consistency",
+        "result": "PASS",
+        "timestamp": "2026-08-03T09:42:15.602424",
+        "details": {
+            "parent_url": "https://swapi.info/api/people/22",
+            "sub_url": "https://swapi.info/api/people/22",
+            "field": "url"
+        }
+    },
+    {
+        "test_case_id": "films-2",
+        "resource_name": "films",
+        "test_name": "test_random_sample_resource_schema",
+        "result": "PASS",
+        "timestamp": "2026-08-03T09:42:16.166388",
+        "details": {
+            "item_url": "https://swapi.info/api/films/2"
+        }
+    },
+    {
+        "test_case_id": "starships-5",
+        "resource_name": "starships",
+        "test_name": "test_random_sample_resource_schema",
+        "result": "PASS",
+        "timestamp": "2026-08-03T09:42:18.772380",
+        "details": {
+            "item_url": "https://swapi.info/api/starships/5"
+        }
+    },
+    {
+        "test_case_id": "starships-41-pilots",
+        "resource_name": "starships",
+        "test_name": "test_bidirectional_url_consistency",
+        "result": "PASS",
+        "timestamp": "2026-08-03T09:42:19.534828",
+        "details": {
+            "parent_url": "https://swapi.info/api/starships/41",
+            "sub_url": "https://swapi.info/api/people/44",
+            "field": "pilots"
+        }
+    },
+    {
+        "test_case_id": "starships-41-films",
+        "resource_name": "starships",
+        "test_name": "test_bidirectional_url_consistency",
+        "result": "PASS",
+        "timestamp": "2026-08-03T09:42:19.658127",
+        "details": {
+            "parent_url": "https://swapi.info/api/starships/41",
+            "sub_url": "https://swapi.info/api/films/4",
+            "field": "films"
+        }
+    },
+    {
+        "test_case_id": "starships-41-url",
+        "resource_name": "starships",
+        "test_name": "test_bidirectional_url_consistency",
+        "result": "PASS",
+        "timestamp": "2026-08-03T09:42:19.787196",
+        "details": {
+            "parent_url": "https://swapi.info/api/starships/41",
+            "sub_url": "https://swapi.info/api/starships/41",
+            "field": "url"
+        }
+    },
+    {
+        "test_case_id": "vehicles-7",
+        "resource_name": "vehicles",
+        "test_name": "test_random_sample_resource_schema",
+        "result": "PASS",
+        "timestamp": "2026-08-03T09:42:20.698807",
+        "details": {
+            "item_url": "https://swapi.info/api/vehicles/7"
+        }
+    },
+    {
+        "test_case_id": "vehicles-7-films",
+        "resource_name": "vehicles",
+        "test_name": "test_bidirectional_url_consistency",
+        "result": "PASS",
+        "timestamp": "2026-08-03T09:42:21.409895",
+        "details": {
+            "parent_url": "https://swapi.info/api/vehicles/7",
+            "sub_url": "https://swapi.info/api/films/1",
+            "field": "films"
+        }
+    },
+    {
+        "test_case_id": "vehicles-7-url",
+        "resource_name": "vehicles",
+        "test_name": "test_bidirectional_url_consistency",
+        "result": "PASS",
+        "timestamp": "2026-08-03T09:42:21.529075",
+        "details": {
+            "parent_url": "https://swapi.info/api/vehicles/7",
+            "sub_url": "https://swapi.info/api/vehicles/7",
+            "field": "url"
+        }
+    },
+    {
+        "test_case_id": "species-16-people",
+        "resource_name": "species",
+        "test_name": "test_bidirectional_url_consistency",
+        "result": "PASS",
+        "timestamp": "2026-08-03T09:42:23.657452",
+        "details": {
+            "parent_url": "https://swapi.info/api/species/16",
+            "sub_url": "https://swapi.info/api/people/47",
+            "field": "people"
+        }
+    },
+    {
+        "test_case_id": "species-16-films",
+        "resource_name": "species",
+        "test_name": "test_bidirectional_url_consistency",
+        "result": "PASS",
+        "timestamp": "2026-08-03T09:42:23.783975",
+        "details": {
+            "parent_url": "https://swapi.info/api/species/16",
+            "sub_url": "https://swapi.info/api/films/4",
+            "field": "films"
+        }
+    },
+    {
+        "test_case_id": "species-16-url",
+        "resource_name": "species",
+        "test_name": "test_bidirectional_url_consistency",
+        "result": "PASS",
+        "timestamp": "2026-08-03T09:42:23.913387",
+        "details": {
+            "parent_url": "https://swapi.info/api/species/16",
+            "sub_url": "https://swapi.info/api/species/16",
+            "field": "url"
+        }
+    },
+    {
+        "test_case_id": "planets-33",
+        "resource_name": "planets",
+        "test_name": "test_random_sample_resource_schema",
+        "result": "PASS",
+        "timestamp": "2026-08-03T09:42:25.105887",
+        "details": {
+            "item_url": "https://swapi.info/api/planets/33"
+        }
+    },
+    {
+        "test_case_id": "planets-11-residents",
+        "resource_name": "planets",
+        "test_name": "test_bidirectional_url_consistency",
+        "result": "PASS",
+        "timestamp": "2026-08-03T09:42:25.822110",
+        "details": {
+            "parent_url": "https://swapi.info/api/planets/11",
+            "sub_url": "https://swapi.info/api/people/63",
+            "field": "residents"
+        }
+    },
+    {
+        "test_case_id": "planets-11-films",
+        "resource_name": "planets",
+        "test_name": "test_bidirectional_url_consistency",
+        "result": "PASS",
+        "timestamp": "2026-08-03T09:42:25.952483",
+        "details": {
+            "parent_url": "https://swapi.info/api/planets/11",
+            "sub_url": "https://swapi.info/api/films/5",
+            "field": "films"
+        }
+    },
+    {
+        "test_case_id": "planets-11-url",
+        "resource_name": "planets",
+        "test_name": "test_bidirectional_url_consistency",
+        "result": "PASS",
+        "timestamp": "2026-08-03T09:42:26.091037",
+        "details": {
+            "parent_url": "https://swapi.info/api/planets/11",
+            "sub_url": "https://swapi.info/api/planets/11",
+            "field": "url"
+        }
     }
 ]
